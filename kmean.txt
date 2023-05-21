@@ -1,0 +1,68 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+P1 = np.array([0.1, 0.6])
+P2 = np.array([0.15, 0.71])
+P3 = np.array([0.08, 0.9])
+P4 = np.array([0.16, 0.85])
+P5 = np.array([0.2, 0.3])
+P6 = np.array([0.25, 0.5])
+P7 = np.array([0.24, 0.1])
+P8 = np.array([0.3, 0.2])
+
+m1 = P1
+m2 = P8
+
+max_iter = 100
+# Perform K-means clustering
+for i in range(max_iter):
+    # Assign each point to the closest centroid
+    C1 = []
+    C2 = []
+    for point in [P1, P2, P3, P4, P5, P6, P7, P8]:
+        dist1 = np.linalg.norm(point - m1)
+        dist2 = np.linalg.norm(point - m2)
+        if dist1 < dist2:
+            C1.append(point)
+        else:
+            C2.append(point)
+ 
+# Recalculate the centroids and update to the centroids closest
+    m1_new = np.mean(C1, axis=0)
+    m2_new = np.mean(C2, axis=0)
+
+    # Check for convergence
+    if np.allclose(m1, m1_new) and np.allclose(m2, m2_new):
+        break
+ 
+    m1 = m1_new
+    m2 = m2_new
+
+print("Cluster 1:", C1)
+print("Length: ", len(C1))
+print("Cluster 2:", C2)
+print("Length: ", len(C2))
+print()
+print(m1)
+print(m2)
+
+
+
+# assuming C1 and C2 are lists of (x, y) coordinates for the two clusters
+# and m1, m2 are the (x, y) coordinates of the centroids
+C1 = [(1, 2), (3, 4), (5, 6)]
+C2 = [(2, 1), (4, 3), (6, 5)]
+m1 = (2, 3)
+m2 = (4, 5)
+
+# plot the clusters and centroids on a scatter plot
+plt.scatter(*zip(*C1), c='red', label='Cluster 1')
+plt.scatter(*zip(*C2), c='blue', label='Cluster 2')
+plt.scatter(*zip(m1, m2), c='green', label='Centroids')
+
+# add legend and axis labels
+plt.legend()
+plt.xlabel('x')
+plt.ylabel('y')
+
+plt.show()

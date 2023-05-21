@@ -1,0 +1,60 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix
+import seaborn as sns
+
+import nltk
+from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer
+
+df = pd.read_csv('Tweets.csv')
+*from google.colab import files
+uploaded = files.upload()*
+
+# removing stopwords, converting all text to lowercase, and applying stemming
+
+
+nltk.download('stopwords')
+stopwords = set(stopwords.words('english'))
+stemmer = PorterStemmer()
+def preprocess(text):
+    text = text.lower()
+    words = text.split()
+    words = [stemmer.stem(word) for word in words if word not in stopwords]
+    return " ".join(words)
+
+df['text'] = df['text'].apply(preprocess)
+
+# convert the preprocessed text data into a vector of features
+tfidf = TfidfVectorizer()
+X = tfidf.fit_transform(df['text'])
+y = df['airline_sentiment']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Train the KNN classifier and evaluate its performance on the testing set
+knn = KNeighborsClassifier(n_neighbors=5)
+knn.fit(X_train, y_train)
+accuracy = knn.score(X_test, y_test)
+print("Accuracy:", accuracy)
+
+sentiment_counts = df['airline_sentiment'].value_counts()
+plt.bar(sentiment_counts.index, sentiment_counts.values)
+plt.title('Sentiment Distribution')
+plt.xlabel('Sentiment')
+plt.ylabel('Count')
+plt.show()
+
+# use to  show the number of true positive, false positive, 
+# true negative, and false negative predictions for each sentiment label.
+
+y_pred = knn.predict(X_test)
+conf_mat = confusion_matrix(y_test, y_pred)
+sns.heatmap(conf_mat, annot=True, fmt='d',
+            xticklabels=knn.classes_, yticklabels=knn.classes_)
+plt.title('Confusion Matrix')
+plt.xlabel('Predicted Label')
+plt.ylabel('True Label')
+plt.show()

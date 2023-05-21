@@ -1,0 +1,50 @@
+import warnings
+warnings.filterwarnings('ignore')
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import missingno as msno 
+%matplotlib inline
+
+data = pd.read_csv("train.csv")
+*from google.colab import files
+uploaded = files.upload()*
+
+data.head()
+
+data.shape
+
+data.info()
+
+data.dtypes.value_counts()
+
+data.columns
+
+data.nunique()
+
+a = len(data)
+b = len(data[data['Survived'] == 1])
+print("Total number of the passengers : ",a)
+print("Total number of passenger who survived : ",b)
+
+print("passenger surived Percentage : ",round(b/a*100,2),"%")
+
+data.isna().sum()
+
+msno.bar(data)
+
+#train data has 177 age nans
+m = data['Age'].mean()
+
+data['Age'] = data['Age'].replace(np.nan, 29)
+
+
+#next is cabin 
+#Shows there is more than 60% of NA's for the column so we should drop it. Judging by .info()
+data = data.drop(['Cabin'], axis=1)
+
+#embarked on train data is only 2 nans
+#embarked on test data is 0
+data['Embarked'] = data['Embarked'].replace(np.nan, 'Q')
